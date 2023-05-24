@@ -145,6 +145,33 @@ static PyObject* get_all_primitive_roots(PyObject* self, PyObject* args){
     return list;
 }
 
+static PyObject* get_all_primitive_roots_loop(PyObject* self, PyObject* args){
+    int p;
+    
+    if (!PyArg_ParseTuple(args, "i", &p))
+        return NULL;
+        
+    PyObject* list = PyList_New(0);
+
+    int o = 1;
+    unsigned long long k;
+    for (int r = 2; r < p; r++) {
+        k = cpow_mod(r, o, p);
+
+        while (k > 1) {
+            o++;
+            k *= r;
+            k %= p;
+        }
+        if (o == (p - 1)) {
+            PyList_Append(list, PyLong_FromLong(r));
+        }
+        o = 1;
+    }
+
+    return list;
+}
+
 static PyObject* version(PyObject* self){
     return Py_BuildValue("s", "Version 0.1");
 }
@@ -155,6 +182,7 @@ static PyMethodDef MyPrimes[] = {
     {"pow_mod2", pow_mod2, METH_VARARGS, "Calculates (base^power) %% mod efficiently. (Mosaed function)"},
     {"is_primitive_root", is_primitive_root, METH_VARARGS, "Checks if x is a primitive root for y."},
     {"get_all_primitive_roots", get_all_primitive_roots, METH_VARARGS, "Returns all primitive roots from p."},
+    {"get_all_primitive_roots_loop", get_all_primitive_roots_loop, METH_VARARGS, "Returns all primitive roots from p."},
     {"version", (PyCFunction)version, METH_NOARGS, "Returns the version of the module."},
     {NULL, NULL, 0, NULL}
 };

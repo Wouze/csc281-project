@@ -1,4 +1,3 @@
-from numba import prange
 from numba import jit, njit
 from functools import cache
 import numpy as np
@@ -13,6 +12,21 @@ import MyPrime
 
 global_mod = 0
 
+def get_lop(p): 
+    res = []
+    o=1
+    for r in range(p):
+        k = MyPrime.pow_mod(r, o, p)
+        # k %= p
+        while k > 1:
+            o+=1
+            k *= r
+            k %= p
+        
+        if o == (p - 1):
+            res.append(r)
+        o = 1
+    return res
 
 @njit()
 def powmod_glob(base, n):
@@ -63,6 +77,7 @@ def is_primitive_root(g, n):
 
 s = time.time()
 p = 40009
+# p=4007
 count = 0
 l  = []
 # for i in range(1, p):
@@ -71,7 +86,11 @@ l  = []
 #         l.append(i)
 #         pass
 
-l = MyPrime.get_all_primitive_roots(p)
+# l = MyPrime.get_all_primitive_roots(p)
+
+# l = get_lop(p)
+
+l = MyPrime.get_all_primitive_roots_loop(p)
 
 print(time.time()-s)
 print(len(l))
@@ -79,3 +98,5 @@ print(len(l))
 # at p=10007
 # in C, took 5.1s
 # in pytohn, took 13.4s
+
+# print(get_lop(p) == l)

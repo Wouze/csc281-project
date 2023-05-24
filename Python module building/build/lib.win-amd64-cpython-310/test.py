@@ -3,7 +3,7 @@ import time
 
 print(dir(MyPrime))
 
-print(len(MyPrime.get_all_primitive_roots(5003)))
+print((MyPrime.get_all_primitive_roots(11)))
 
 x= 5000
 y=1000050
