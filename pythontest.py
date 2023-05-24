@@ -35,7 +35,7 @@ def powmod(base, n, mod):
         return ((powmod(base, (n-1)/2, mod)**2)*base) % mod
 
 
-@njit
+
 def is_primitive_root(g, n):
     global global_mod
     for i in range(1, n-1):
@@ -52,26 +52,29 @@ def is_primitive_root(g, n):
         # if powmod_glob(g, i) == 1:  # 2.576s
         #     return False
 
-        if powmod(g, i, n) == 1:  # 1.481s w: @njit @ is_primitive_root(g, n)
-            return False
-
-        # if MyPrime.pow_mod(g, i, n) == 1:
+        # if powmod(g, i, n) == 1:  # 1.481s w: @njit @ is_primitive_root(g, n)
         #     return False
+
+        if MyPrime.pow_mod(g, i, n) == 1:
+            return False
 
     return True
 
 
 s = time.time()
-p = 5003
+p = 40009
 count = 0
-for i in range(1, p):
-    if MyPrime.is_primitive_root(i, p):
-        # print(f"{i}, ")
-        count += 1
-        pass
+l  = []
+# for i in range(1, p):
+#     if MyPrime.is_primitive_root(i, p):
+#         # print(f"{i}, ")
+#         l.append(i)
+#         pass
+
+l = MyPrime.get_all_primitive_roots(p)
 
 print(time.time()-s)
-print(count)
+print(len(l))
 
 # at p=10007
 # in C, took 5.1s

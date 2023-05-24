@@ -1,6 +1,9 @@
 import MyPrime
 import time
 
+print(dir(MyPrime))
+
+print(len(MyPrime.get_all_primitive_roots(5003)))
 
 x= 5000
 y=1000050
@@ -18,3 +21,18 @@ for i in range(5000000):
 
 s=time.time() - s
 print(f"took {s} seconds")
+
+s = time.time()
+p = 40009
+count = 0
+l  = []
+# for i in range(1, p):
+#     if MyPrime.is_primitive_root(i, p):
+#         # print(f"{i}, ")
+#         l.append(i)
+#         pass
+
+l = MyPrime.get_all_primitive_roots(p)
+
+print(time.time()-s)
+print(len(l))
