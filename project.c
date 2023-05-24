@@ -32,7 +32,7 @@ int is_primitive_root(unsigned long long g, unsigned long long n)
     return 1;
 }
 
-int pow_modd(int g, int exp, int n)
+long long pow_mod2(long long g, long long exp, long long n)
 {
     if (exp == 0)
         return 1;
@@ -41,20 +41,18 @@ int pow_modd(int g, int exp, int n)
     if (exp == 2)
         return (g * g) % n;
 
-    // return (pow_modd(g, exp % 2, n) * pow_modd(g, (pow_modd(g, exp / 2, n) * pow_modd(g, exp/2, n)) % n)) % n;
-    return pow_modd( pow_modd(g, exp%2, n) * pow_modd( pow_modd(g, exp>>1, n)*pow_modd(g, exp>>1, n), 1, n ), 1, n  );
+    return pow_mod2( pow_mod2(g, exp%2, n) * pow_mod2( pow_mod2(g, exp>>1, n)*pow_mod2(g, exp>>1, n), 1, n ), 1, n  );
 }
 
-
-unsigned int pow_mod(unsigned short x, unsigned short y, unsigned short z)
+unsigned long long pow_mod(long long x, long long y, const long long z)
 {
-    unsigned long number = 1;
+    unsigned long long number = 1;
     while (y)
     {
-        if (y & 1)
+        if (y & 1)  /* is_even */
             number = number * x % z;
-        y >>= 1;
-        x = (unsigned int)x * x % z;  /* this cast takes time */
+        y >>= 1;  /* diviide 2 */
+        x = (unsigned long long)x * x % z;  
     }
     return number;
 }
@@ -77,7 +75,7 @@ int main()
     clock_t t;
     t = clock();
     
-    int p = 5003;
+    int p = 40009;
     
     int count =0;
     for (int i =1; i < p; i++)
@@ -97,6 +95,49 @@ int main()
     
     return 0;
 }
+
+
+// // PRIME website
+// int main() {
+//     clock_t t;
+//     t = clock();
+//     long long o = 1;
+//     long long k;
+//     // int roots[1000];
+//     int z = 0;
+//     long long theNum = 40009; // Replace with the actual value of theNum
+
+//     for (long long r = 2; r < theNum; r++) {
+//         k = pow_mod(r, o, theNum);
+//         // k = pow(r, o);
+//         // k %= theNum;
+
+//         while (k > 1) {
+//             o++;
+//             k *= r;
+//             k %= theNum;
+//         }
+//         if (o == (theNum - 1)) {
+//             // roots[z] = r;
+//             z++;
+//         }
+//         o = 1;
+//     }
+//     printf("%d has %d primitive roots, and they are \n", theNum, z);
+//     z--;
+
+//     t = clock() - t;
+//     double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+ 
+//     printf("took %f seconds to execute \n", time_taken);
+    
+//     // for (int y = 0; y < z; y++) {
+//     //     printf("%d ", roots[y]);
+//     // }
+
+//     return 0;
+
+// }
 
 // PRIME website
 // int main() {

@@ -76,12 +76,12 @@ def is_primitive_root(g, n):
 
 
 s = time.time()
-p = 40009
-# p=4007
+p = 5003
+p=4007
 count = 0
 l  = []
 # for i in range(1, p):
-#     if MyPrime.is_primitive_root(i, p):
+#     if is_primitive_root(i, p):
 #         # print(f"{i}, ")
 #         l.append(i)
 #         pass

@@ -1,5 +1,5 @@
 CC= gcc
-CFLAGS= -Wall
+CFLAGS= -O1
 
 p: 
 	@${CC} $(CFLAGS) -o p project.c
