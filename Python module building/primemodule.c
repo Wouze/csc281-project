@@ -28,9 +28,9 @@ long long cpow_mod2(long long g, long long exp, long long n)
     return cpow_mod2( cpow_mod2(g, exp%2, n) * cpow_mod2( cpow_mod2(g, exp>>1, n)*cpow_mod2(g, exp>>1, n), 1, n ), 1, n  );
 }
 
-unsigned long long cpow_mod(long long x, long long y, long long z)
+long long cpow_mod(long long x, long long y, long long z)
 {
-    unsigned long long number = 1;
+    long long number = 1;
     while (y)
     {
         if (y & 1)  /* is_even */
@@ -97,23 +97,25 @@ static PyObject* is_prime(PyObject* self, PyObject* args){
 
 
 static PyObject* pow_mod(PyObject* self, PyObject* args){
-    long x, y, z, sts;
+    long x, y, z;
+    unsigned long long sts;
     
     if (!PyArg_ParseTuple(args, "lll", &x, &y, &z))
         return NULL;
     
     sts = cpow_mod(x, y, z);
-    return PyLong_FromLong(sts);
+    return PyLong_FromLongLong(sts);
 }
 
 static PyObject* pow_mod2(PyObject* self, PyObject* args){
-    long x, y, z, sts;
+    long x, y, z;
+    long long sts;
     
     if (!PyArg_ParseTuple(args, "lll", &x, &y, &z))
         return NULL;
     
     sts = cpow_mod(x, y, z);
-    return PyLong_FromLong(sts);
+    return PyLong_FromLongLong(sts);
 }
 
 static PyObject* is_primitive_root(PyObject* self, PyObject* args){
