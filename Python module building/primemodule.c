@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "Python.h"
+#include <omp.h>
 
 
 int cis_prime(int n)
@@ -174,6 +175,39 @@ static PyObject* get_all_primitive_roots_loop(PyObject* self, PyObject* args){
     return list;
 }
 
+// static PyObject* get_all_primitive_roots_loop_thread(PyObject* self, PyObject* args){
+//     int p;
+    
+//     if (!PyArg_ParseTuple(args, "i", &p))
+//         return NULL;
+        
+//     PyObject* list = PyList_New(0);
+
+
+//     PyThreadState *_save;
+
+//     _save = PyEval_SaveThread();
+//     int o = 1;
+//     unsigned long long k;
+//     #pragma omp parallel for private(o) reduction(+:list)
+//     for (int r = 2; r < p; r++) {
+//         k = cpow_mod(r, o, p);
+
+//         while (k > 1) {
+//             o++;
+//             k *= r;
+//             k %= p;
+//         }
+//         if (o == (p - 1)) {
+//             PyList_Append(list, PyLong_FromLong(r));
+//         }
+//         o = 1;
+//     }
+//     PyEval_RestoreThread(_save);
+
+//     return list;
+// }
+
 static PyObject* version(PyObject* self){
     return Py_BuildValue("s", "Version 0.1");
 }
@@ -185,6 +219,7 @@ static PyMethodDef MyPrimes[] = {
     {"is_primitive_root", is_primitive_root, METH_VARARGS, "Checks if x is a primitive root for y."},
     {"get_all_primitive_roots", get_all_primitive_roots, METH_VARARGS, "Returns all primitive roots from p."},
     {"get_all_primitive_roots_loop", get_all_primitive_roots_loop, METH_VARARGS, "Returns all primitive roots from p."},
+    // {"get_all_primitive_roots_loop_thread", get_all_primitive_roots_loop_thread, METH_VARARGS, "Returns all primitive roots from p (threaded)."},
     {"version", (PyCFunction)version, METH_NOARGS, "Returns the version of the module."},
     {NULL, NULL, 0, NULL}
 };

@@ -22,9 +22,10 @@ z=10055
 # s=time.time() - s
 # print(f"took {s} seconds")
 
+p = 31
 p = 49999
-p = 91283
 count = 0
+
 s = time.time()
 l  = []
 # for i in range(1, p):
