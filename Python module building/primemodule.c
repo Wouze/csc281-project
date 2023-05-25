@@ -153,8 +153,12 @@ static PyObject* get_all_primitive_roots_loop(PyObject* self, PyObject* args){
     
     if (!PyArg_ParseTuple(args, "i", &p))
         return NULL;
-        
     PyObject* list = PyList_New(0);
+
+    if (!cis_prime(p)){
+        printf("%d Is not a prime!\n",p);
+        return list;
+    }
 
     int o = 1;
     unsigned long long k;

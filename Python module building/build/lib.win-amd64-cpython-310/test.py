@@ -23,7 +23,7 @@ z=10055
 # print(f"took {s} seconds")
 
 p = 31
-p = 49999
+p = 15
 count = 0
 
 s = time.time()
