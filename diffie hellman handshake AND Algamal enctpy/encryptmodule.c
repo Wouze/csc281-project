@@ -5,16 +5,29 @@
 #include "string.h"
 #include "Python.h"
 
-long long cpow_mod(long long g, long long exp, long long n)
-{
-    if (exp == 0)
-        return 1;
-    if (exp == 1)
-        return g % n;
-    if (exp == 2)
-        return (g * g) % n;
 
-    return cpow_mod( cpow_mod(g, exp%2, n) * cpow_mod( cpow_mod(g, exp>>1, n)*cpow_mod(g, exp>>1, n), 1, n ), 1, n  );
+unsigned int cis_prime(unsigned int n)
+{
+  unsigned int last = (unsigned int) sqrt(n) + 1; 
+
+  for (unsigned int j = 2; j <= last; ++j)
+    if (n % j == 0)
+      return 0;
+
+  return 1;
+}
+
+long long cpow_mod(long long x, long long y, long long z)
+{
+    long long number = 1;
+    while (y)
+    {
+        if (y & 1)  /* is_even */
+            number = number * x % z;
+        y >>= 1;  /* diviide 2 */
+        x = (unsigned long long)x * x % z;  
+    }
+    return number;
 }
 
 
@@ -59,6 +72,31 @@ int cget_second_primitive_root(int p){
     return 2;
 } 
 
+long long cget_second_primitive_root_loop(long long p){
+
+    long long o = 1;
+    long long k;
+    long long z = 0;
+    
+    for (long long r = 2; r < p; r++) {
+        k = cpow_mod(r, o, p);
+
+        while (k > 1) {
+            o++;
+            k *= r;
+            k %= p;
+        }
+        if (o == (p - 1)) {
+            // roots[z] = r;
+            z++;
+            if (z==2)
+                return r;
+        }
+        o = 1;
+    }
+
+} 
+
 
 unsigned long long long_pow(long long base, long long exp){
     unsigned long long number =1;
@@ -76,6 +114,9 @@ int generate_c1(int g, int secret, int p){
 void gen_g(int*g, int p){
     *g = cget_second_primitive_root(p);
 }
+void gen_g_FAST(int *g, int p){
+    *g = cget_second_primitive_root_loop(p);
+}
 
 void gen_e(int*e, int g, int x_secret, int p){
     *e = cpow_mod(g, x_secret, p);
@@ -83,6 +124,11 @@ void gen_e(int*e, int g, int x_secret, int p){
 
 void gen_keys(int* g, int x_secret, int* e, int p){
     gen_g(g, p);
+    gen_e(e, *g, x_secret, p);
+}
+
+void gen_keys_FAST(int* g, int x_secret, int* e, int p){
+    gen_g_FAST(g, p);
     gen_e(e, *g, x_secret, p);
 }
 
@@ -203,6 +249,16 @@ int main(){
 */
 #if 1
 
+static PyObject* is_prime(PyObject* self, PyObject* args){
+    unsigned int number, sts;
+    
+    if (!PyArg_ParseTuple(args, "i", &number))
+        return NULL;
+    
+    sts = cis_prime(number);
+    return PyBool_FromLong(sts);
+}
+
 static PyObject* gen_keys_p(PyObject* self, PyObject* args){
     int p, secret, g_, e_;
     
@@ -215,21 +271,25 @@ static PyObject* gen_keys_p(PyObject* self, PyObject* args){
     return sts;
 }
 
+static PyObject* gen_keys_FAST_p(PyObject* self, PyObject* args){
+    int p, secret, g_, e_;
+    
+    if (!PyArg_ParseTuple(args, "ii", &p, &secret))
+        return NULL;
+    
+    gen_keys_FAST(&g_, secret, &e_, p);
+    PyObject* sts = PyTuple_Pack(2, PyLong_FromLong(g_),  PyLong_FromLong(e_));
+
+    return sts;
+}
+
 static PyObject* gen_c1_p(PyObject* self, PyObject* args){
-    int p, secret, g, sts;
+    int  p, secret, g, sts;
     if (!PyArg_ParseTuple(args, "iii", &g, &secret, &p))
         return NULL;
     
     sts = cpow_mod(g, secret, p);
     return PyLong_FromLong(sts);
-}
-
-static PyObject* gen_e_p(PyObject* self, PyObject* args){
-    int e, secret, g, p;
-    if (!PyArg_ParseTuple(args, "iii", &g, &secret, &p))
-        return NULL;
-    gen_e(&e, g, secret, p);
-    return PyLong_FromLong(e);
 }
 
 static PyObject* gen_x_key_py(PyObject* self, PyObject* args){
@@ -288,31 +348,32 @@ static PyObject* decrypt_p(PyObject* self, PyObject* args){
 }
 
 static PyObject* version(PyObject* self){
-    return Py_BuildValue("s", "Version 0.1");
+    return Py_BuildValue("s", "Version 0.2");
 }
 
-static PyMethodDef ElGamal_cs[] = {
-    {"gen_keys", gen_keys_p, METH_VARARGS, "Calculates (base^power) %% mod efficiently. (Mohammad function)"},
-    {"gen_c1", gen_c1_p, METH_VARARGS, "Calculates if the number is prime or not."},
-    {"gen_e", gen_e_p, METH_VARARGS, "Calculates if the number is prime or not."},
-    {"gen_x_key", gen_x_key_py, METH_VARARGS, "Calculates (base^power) %% mod efficiently. (Mosaed function)"},
-    {"encrypt", encrypt_p, METH_VARARGS, "Checks if x is a primitive root for y."},
-    {"decrypt", decrypt_p, METH_VARARGS, "Returns all primitive roots from p."},
+static PyMethodDef pygamals[] = {
+    {"is_prime", is_prime, METH_VARARGS, "Calculates if the number is prime or not."},
+    {"gen_keys", gen_keys_p, METH_VARARGS, "generates keys"},
+    {"gen_keys_FAST", gen_keys_FAST_p, METH_VARARGS, "generates keys, but Fast"},
+    {"gen_c1", gen_c1_p, METH_VARARGS, "generate cypher text 1"},
+    {"gen_x_key", gen_x_key_py, METH_VARARGS, "generate x_key for decryption"},
+    {"encrypt", encrypt_p, METH_VARARGS, "encrypt message"},
+    {"decrypt", decrypt_p, METH_VARARGS, "decrypt c1, c2 cypher messages"},
     {"version", (PyCFunction)version, METH_NOARGS, "Returns the version of the module."},
     {NULL, NULL, 0, NULL}
 };
 
-static struct PyModuleDef ElGamal_c = {
+static struct PyModuleDef pygamal = {
     PyModuleDef_HEAD_INIT,
-    "ElGamal_c",
+    "pygamal",
     "Prime calculations module",
     -1, // global state
-    ElGamal_cs,
+    pygamals,
 };
 
-PyMODINIT_FUNC PyInit_ElGamal_c(void)
+PyMODINIT_FUNC PyInit_pygamal(void)
 {
-    return PyModule_Create(&ElGamal_c);   
+    return PyModule_Create(&pygamal);   
 }
 
 
