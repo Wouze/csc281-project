@@ -230,7 +230,7 @@ int main(){
 
     // Computing c1, c2 //
 
-    int msg=16;
+    int msg= 'H';
 
     unsigned long long c1 = cpow_mod(g, y_random_SECRET, p);
     // unsigned long long c2 = cget_th_primitive_root(p, (int)message[0]) * s_SHARED;
@@ -248,7 +248,7 @@ int main(){
     unsigned long long new_m = ((c2%p) * cpow_mod(x, p-2, p)) % p;
     // printf("The y_random variable is: %d\n", y_random);
 
-    printf("plain: %c\n", new_m);
+    printf("plain after: %c\n", new_m);
     printf("\n\n\n\n\n");   
     // s_SHARED = long_pow(g, x_random_SECRET); 
 
