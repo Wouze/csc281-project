@@ -11,6 +11,7 @@ pip install pygamal
 then, create any python file, and put this starter code:
 
 ```python
+from pygamal import *
 
 ## Define global vars ##
 x = 23_456  # My private key
