@@ -1,4 +1,7 @@
 import MyPrime
+
+print(dir(MyPrime))
+quit()
 import pygamal
 
 
@@ -80,7 +83,7 @@ z=10055
 # print(f"took {s} seconds")
 
 p = 31
-p = 15
+p = 11
 count = 0
 
 s = time.time()

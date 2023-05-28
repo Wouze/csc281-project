@@ -17,6 +17,7 @@ int cis_prime(int n)
   return 1;
 }
 
+// Mosaed function before optimization
 long long cpow_mod2(long long g, long long exp, long long n)
 {
     if (exp == 0)
@@ -29,6 +30,37 @@ long long cpow_mod2(long long g, long long exp, long long n)
     return cpow_mod2( cpow_mod2(g, exp%2, n) * cpow_mod2( cpow_mod2(g, exp>>1, n)*cpow_mod2(g, exp>>1, n), 1, n ), 1, n  );
 }
 
+// Mosaed function after optimization
+long long cpow_mod3(long long g, long long exp, long long n)
+{
+    
+    if (exp == 0)
+        return 1;
+    if (exp == 1)
+        return g % n;
+    if (exp == 2)
+        return (g * g) % n;
+
+    long long g_half_exp = cpow_mod3(g, exp>>1, n); // optimization
+
+    return (cpow_mod3(g, exp%2, n) * (g_half_exp*g_half_exp) % n) % n;
+}
+
+
+long long cpow_mod4(long long g, long long exp, long long n)
+{
+    if (exp == 0)
+        return 1;
+    else if (!exp & 1){
+        long long g_half_exp = cpow_mod4(g, exp>>1, n); /* exp/2 */
+
+        return (g_half_exp*g_half_exp) % n;
+    } /*is even*/
+
+    return (cpow_mod4(g, exp-1, n) * g%n) % n;
+}
+
+// internet function
 long long cpow_mod(long long x, long long y, long long z)
 {
     long long number = 1;
@@ -42,7 +74,20 @@ long long cpow_mod(long long x, long long y, long long z)
     return number;
 }
 
-int cis_primitive_root(int g, int n)
+int cis_primitive_root_mosaed(int g, int n)
+{
+    int i;
+
+    for (i = 1; i < n - 1; i++)
+    {
+        if (cpow_mod3(g, i, n) == 1)
+            return 0;
+    }
+
+    return 1;
+}
+
+int cis_primitive_root_inter(int g, int n)
 {
     int i;
 
@@ -61,12 +106,12 @@ int main()
     clock_t t;
     t = clock();
     
-    int p = 5003;
+    int p = 10009;
     
     int count =0;
     for (int i =1; i < p; i++)
     {
-        if (cis_primitive_root(i, p)){
+        if (cis_primitive_root_inter(i, p)){
             count++;
             // printf("%d Is primitive root to %d\n", i, p);   
         }
@@ -84,7 +129,13 @@ int main()
 
 
 
+//##################################################
+//          PyModule stuff
+//##################################################
 
+
+
+#if 1
 
 static PyObject* is_prime(PyObject* self, PyObject* args){
     int number, sts;
@@ -115,7 +166,7 @@ static PyObject* pow_mod2(PyObject* self, PyObject* args){
     if (!PyArg_ParseTuple(args, "lll", &x, &y, &z))
         return NULL;
     
-    sts = cpow_mod(x, y, z);
+    sts = cpow_mod3(x, y, z);
     return PyLong_FromLongLong(sts);
 }
 
@@ -124,12 +175,12 @@ static PyObject* is_primitive_root(PyObject* self, PyObject* args){
     
     if (!PyArg_ParseTuple(args, "ii", &g, &n))
         return NULL;
-    
-    sts = cis_primitive_root(g, n);
+    printf("USING THE GLOBAL IN_PRIMITVE_ROOT\n");
+    sts = cis_primitive_root_inter(g, n);
     return PyBool_FromLong(sts);
 }
 
-static PyObject* get_all_primitive_roots(PyObject* self, PyObject* args){
+static PyObject* get_all_primitive_roots_mosaed(PyObject* self, PyObject* args){
     int p;
     
     if (!PyArg_ParseTuple(args, "i", &p))
@@ -139,7 +190,26 @@ static PyObject* get_all_primitive_roots(PyObject* self, PyObject* args){
     // int ii =0;
     for (long i =1; i < p; i++)
     {
-        if (cis_primitive_root(i, p)){
+        if (cis_primitive_root_mosaed(i, p)){
+            PyList_Append(list, PyLong_FromLong(i));
+            // PyList_SET_ITEM(list, ii++, PyLong_FromLong(i));
+        }
+    }
+
+    return list;
+}
+
+static PyObject* get_all_primitive_roots_inter(PyObject* self, PyObject* args){
+    int p;
+    
+    if (!PyArg_ParseTuple(args, "i", &p))
+        return NULL;
+        
+    PyObject* list = PyList_New(0);
+    // int ii =0;
+    for (long i =1; i < p; i++)
+    {
+        if (cis_primitive_root_inter(i, p)){
             PyList_Append(list, PyLong_FromLong(i));
             // PyList_SET_ITEM(list, ii++, PyLong_FromLong(i));
         }
@@ -156,7 +226,7 @@ static PyObject* get_all_primitive_roots_loop(PyObject* self, PyObject* args){
     PyObject* list = PyList_New(0);
 
     if (!cis_prime(p)){
-        printf("%d Is not a prime!\n",p);
+        printf("%d Is not a prime!\nStoped from primitive generator (loop)\n",p);
         return list;
     }
 
@@ -179,38 +249,6 @@ static PyObject* get_all_primitive_roots_loop(PyObject* self, PyObject* args){
     return list;
 }
 
-// static PyObject* get_all_primitive_roots_loop_thread(PyObject* self, PyObject* args){
-//     int p;
-    
-//     if (!PyArg_ParseTuple(args, "i", &p))
-//         return NULL;
-        
-//     PyObject* list = PyList_New(0);
-
-
-//     PyThreadState *_save;
-
-//     _save = PyEval_SaveThread();
-//     int o = 1;
-//     unsigned long long k;
-//     #pragma omp parallel for private(o) reduction(+:list)
-//     for (int r = 2; r < p; r++) {
-//         k = cpow_mod(r, o, p);
-
-//         while (k > 1) {
-//             o++;
-//             k *= r;
-//             k %= p;
-//         }
-//         if (o == (p - 1)) {
-//             PyList_Append(list, PyLong_FromLong(r));
-//         }
-//         o = 1;
-//     }
-//     PyEval_RestoreThread(_save);
-
-//     return list;
-// }
 
 static PyObject* version(PyObject* self){
     return Py_BuildValue("s", "Version 0.1");
@@ -221,7 +259,8 @@ static PyMethodDef MyPrimes[] = {
     {"pow_mod", pow_mod, METH_VARARGS, "Calculates (base^power) %% mod efficiently. (Mohammad function)"},
     {"pow_mod2", pow_mod2, METH_VARARGS, "Calculates (base^power) %% mod efficiently. (Mosaed function)"},
     {"is_primitive_root", is_primitive_root, METH_VARARGS, "Checks if x is a primitive root for y."},
-    {"get_all_primitive_roots", get_all_primitive_roots, METH_VARARGS, "Returns all primitive roots from p."},
+    {"get_all_primitive_roots_mosaed", get_all_primitive_roots_mosaed, METH_VARARGS, "Returns all primitive roots from p."},
+    {"get_all_primitive_roots_inter", get_all_primitive_roots_inter, METH_VARARGS, "Returns all primitive roots from p."},
     {"get_all_primitive_roots_loop", get_all_primitive_roots_loop, METH_VARARGS, "Returns all primitive roots from p."},
     // {"get_all_primitive_roots_loop_thread", get_all_primitive_roots_loop_thread, METH_VARARGS, "Returns all primitive roots from p (threaded)."},
     {"version", (PyCFunction)version, METH_NOARGS, "Returns the version of the module."},
@@ -288,7 +327,7 @@ PyMODINIT_FUNC PyInit_MyPrime(void)
 
 
 
-
+#endif
 
 
 
