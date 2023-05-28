@@ -71,7 +71,7 @@ class ElGamalEncryptor:
 
         msg = ElGamal_c.decrypt(len(c2), *c2, x_key, self.p_GLOBAL)
         return msg
-
+    100_000_007
 x = 100_000_007
 while not ElGamal_c.is_prime(x):
     x+=1

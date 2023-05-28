@@ -54,7 +54,7 @@ print("Decrypted message:", msg_decrypted)
 ```
 """
 
-from build import ElGamal_c
+import ElGamal_c
 
 class ElGamalEncryptor:
     """
@@ -172,59 +172,3 @@ def decrypt(c2:list[int], x_key:int, p:int) -> str:
     decrypts cipher message 1 and 2 using keys.
     """
     return ElGamal_c.decrypt(len(c2), *c2, x_key, p)
-
-
-import time
-
-
-x = 100_000_007
-while not is_prime(x):
-    x+=1
-    print(x, is_prime(x))
-
-
-## Define global vars ##
-s = time.time()
-
-p_glob = x # Global
-if not is_prime(p_glob):
-    print("SD")
-    quit(1)
-
-x = 99_932_243 # My private key
-g_glob, e_glob = gen_keys_FAST(p_glob, x)
-
-s = time.time() - s
-print(f"Took {s} seconds to generate global vars")
-
-s = time.time()
-## Define me ##
-Alice = ElGamalEncryptor(p_glob, x, g_glob, e_glob)
-
-## Define Bob ##
-y = 98_152_663 # Bob private key
-Bob = ElGamalEncryptor(p_glob, y, g_glob, e_glob)
-
-
-
-s = time.time() - s
-print(f"Took {s} seconds to define Alice and Bob")
-####### Bob want to send message to me #######
-s = time.time()   
-
-msg = 'Hi Alice!'
-c1, c2 = Bob.encrypt(msg)
-print(c1, c2)
-
-s = time.time() - s
-print(f"Took {s} seconds to encrypt")
-####### Bob sent me (c1, c2) #######
-s = time.time() 
-
-
-x = Alice.decrypt(c1, c2)
-s = time.time() - s
-print(f"Took {s} seconds to decrypt")
-
-print(x)
-

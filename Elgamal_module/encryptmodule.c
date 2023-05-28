@@ -348,10 +348,10 @@ static PyObject* decrypt_p(PyObject* self, PyObject* args){
 }
 
 static PyObject* version(PyObject* self){
-    return Py_BuildValue("s", "Version 0.2");
+    return Py_BuildValue("s", "Version 0.2.6");
 }
 
-static PyMethodDef pygamals[] = {
+static PyMethodDef ElGamal_cs[] = {
     {"is_prime", is_prime, METH_VARARGS, "Calculates if the number is prime or not."},
     {"gen_keys", gen_keys_p, METH_VARARGS, "generates keys"},
     {"gen_keys_FAST", gen_keys_FAST_p, METH_VARARGS, "generates keys, but Fast"},
@@ -363,17 +363,17 @@ static PyMethodDef pygamals[] = {
     {NULL, NULL, 0, NULL}
 };
 
-static struct PyModuleDef pygamal = {
+static struct PyModuleDef ElGamal_c = {
     PyModuleDef_HEAD_INIT,
-    "pygamal",
+    "ElGamal_c",
     "Prime calculations module",
     -1, // global state
-    pygamals,
+    ElGamal_cs,
 };
 
-PyMODINIT_FUNC PyInit_pygamal(void)
+PyMODINIT_FUNC PyInit_ElGamal_c(void)
 {
-    return PyModule_Create(&pygamal);   
+    return PyModule_Create(&ElGamal_c);   
 }
 
 

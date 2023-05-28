@@ -1,4 +1,8 @@
-from distutils.core import setup
+from distutils.core import setup, Extension
+
+module = Extension("ElGamal_c", sources=["encryptmodule.c"]
+                  #  ,extra_compile_args=['/openmp']
+                   )
 
 long_description =\
 """
@@ -7,8 +11,8 @@ The project supervisor is Aqil Alazimi. LinkedIn: https://www.linkedin.com/in/aq
 The project repo is: https://github.com/Wouze/csc281-project
 """
 
-setup(name="pygamal",
-      version="1.0.6",
+setup(name="ElGamal_c",
+      version="1.0.1",
       author="Wouze (Mohammad)",
       author_email="m7mdwats1@hotmail.com",
       description="This module is for csc281 encryption project ",
@@ -16,7 +20,6 @@ setup(name="pygamal",
       long_description=long_description,
       url='https://github.com/Wouze/csc281-project',
       keywords=['python', 'c', 'primitive root', 'encryption', 'algamal', 'prime'],
-      install_requires=["ElGamal-c==1.0.1"],
       classifiers=[
             "Development Status :: 1 - Planning",
             "Intended Audience :: Developers",
@@ -24,5 +27,6 @@ setup(name="pygamal",
             "Operating System :: Unix",
             "Operating System :: MacOS :: MacOS X",
             "Operating System :: Microsoft :: Windows",
-      ])
+      ],
+      ext_modules=[module])
 
