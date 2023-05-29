@@ -1,6 +1,8 @@
 # csc281-project
 This is our project at csc281 course
 
+project supervisor: Aqil Alazimi
+
 # Testing pygamal module
 
 to test pygamal module, you first type this in cmd
