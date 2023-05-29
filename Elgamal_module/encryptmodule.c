@@ -72,11 +72,10 @@ int cget_second_primitive_root(int p){
     return 2;
 } 
 
-long long cget_second_primitive_root_loop(long long p){
+long long cget_first_primitive_root_loop(long long p){
 
     long long o = 1;
     long long k;
-    long long z = 0;
     
     for (long long r = 2; r < p; r++) {
         k = cpow_mod(r, o, p);
@@ -87,10 +86,7 @@ long long cget_second_primitive_root_loop(long long p){
             k %= p;
         }
         if (o == (p - 1)) {
-            // roots[z] = r;
-            z++;
-            if (z==2)
-                return r;
+            return r;
         }
         o = 1;
     }
@@ -115,7 +111,7 @@ void gen_g(int*g, int p){
     *g = cget_second_primitive_root(p);
 }
 void gen_g_FAST(int *g, int p){
-    *g = cget_second_primitive_root_loop(p);
+    *g = cget_first_primitive_root_loop(p);
 }
 
 void gen_e(int*e, int g, int x_secret, int p){

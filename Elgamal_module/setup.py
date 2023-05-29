@@ -12,7 +12,7 @@ The project repo is: https://github.com/Wouze/csc281-project
 """
 
 setup(name="ElGamal_c",
-      version="1.0.1",
+      version="2.0.1",
       author="Wouze (Mohammad)",
       author_email="m7mdwats1@hotmail.com",
       description="This module is for csc281 encryption project ",
