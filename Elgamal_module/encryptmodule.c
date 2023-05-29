@@ -76,7 +76,7 @@ long long cget_first_primitive_root_loop(long long p){
 
     long long o = 1;
     long long k;
-    
+    long long count =0;
     for (long long r = 2; r < p; r++) {
         k = cpow_mod(r, o, p);
 
@@ -86,12 +86,50 @@ long long cget_first_primitive_root_loop(long long p){
             k %= p;
         }
         if (o == (p - 1)) {
-            return r;
+            count++;
         }
         o = 1;
     }
-
+    return count;
 } 
+
+int generator (unsigned long long p) {
+    unsigned long long count = 0;
+
+    // {
+    // unsigned long long phi = p-1,  n = phi;
+    // for (unsigned long long i=2; i*i<=n; ++i)
+    //     if (n % i == 0) {
+    //         printf("COUNT: %d\n", count);
+    //         count++;
+    //         while (n % i == 0)
+    //             n /= i;
+    //     }
+    // }
+    
+    long* fact = (long*) malloc(p*sizeof(long)); 
+    int index = 0;
+    unsigned long long phi = p-1,  n = phi;
+    for (unsigned long long i=2; i*i<=n; ++i)
+        if (n % i == 0) {
+            fact[index++] = i;
+            while (n % i == 0)
+                n /= i;
+        }
+    if (n > 1)
+        fact[index++] = n;
+
+    for (unsigned long long res=2; res<p; ++res) {
+        int ok = 1;
+        for (size_t i=0; i<index && ok; ++i)
+            ok &= cpow_mod (res, phi / fact[i], p) != 1;
+        if (ok){
+            count++;
+        }
+            
+    }
+    return count;
+}
 
 
 unsigned long long long_pow(long long base, long long exp){
@@ -163,9 +201,30 @@ void decrpyt_str(char* str_decrpt, int* str_encrpt, int secret, int p, int str_l
 
 int main(){
 
-    int p_GLOBAL = 1009;  // Any large prime //
-    int g_GLOBAL = cget_second_primitive_root(p_GLOBAL);  // generate g //
+    clock_t t;
+    t = clock();
+    
+    unsigned long long p = 101081;
+    
+    // int count =0;
+    // for (int i =1; i < 9999999; i++)
+    // {
+    //     count = cpow_mod(9992, i, p);
+    // }
+    // int g___ = generator(p); printf("g him: %d\n", g___);
+    int g_GLOBAL_ = cget_first_primitive_root_loop(p); printf("g  my: %d\n", g_GLOBAL_);  // generate g //
 
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+ 
+    printf("took %f seconds to execute \n", time_taken);
+
+    return 0;
+
+    int p_GLOBAL = 1009;  // Any large prime //
+    int g_GLOBAL = cget_first_primitive_root_loop(p_GLOBAL);  // generate g //
+    int g__ = generator(p_GLOBAL);
+    printf("g: %d\ng: %d\n", g_GLOBAL, g__);
 
     int x_random_SECRET = rand() % (p_GLOBAL-2) + 1;  // My Secret key //
     x_random_SECRET = 54;
@@ -243,7 +302,7 @@ int main(){
             Py module stuff
 ###########################################################
 */
-#if 1
+#if 0
 
 static PyObject* is_prime(PyObject* self, PyObject* args){
     unsigned int number, sts;
