@@ -145,12 +145,12 @@ def bench_average(func, n, loop):
 
 
 def plot_func(func,func2, name1, name2, func_name, n=7_00):
-    res = bench_average(func, n, True)
+    res = bench_average(func, n, False)
     print("\n===============\n")
 
     Prime_n = [x[0] for x in res]
     Speed = [x[1] for x in res]
-    z = sum(Speed)/len(Speed)
+    # z = sum(Speed)/len(Speed)
     bspl = splrep(Prime_n, Speed, s=10)
     bspl_y = splev(Prime_n, bspl)
     plot.plot(Prime_n, bspl_y, '-', label=name1, linewidth=1)
@@ -159,21 +159,21 @@ def plot_func(func,func2, name1, name2, func_name, n=7_00):
 
     Prime_n = [x[0] for x in res]
     Speed = [x[1] for x in res]
+    z = (sum(Speed)/len(Speed))
+    bspl = splrep(Prime_n, Speed, s=10)
+    bspl_y = splev(Prime_n, bspl)
+    plot.plot(Prime_n, bspl_y, '-', label=name2, linewidth=1)
+
+
+
+    res = bench_average(MyPrime.get_all_primitive_roots_loop, n, False)
+
+    Prime_n = [x[0] for x in res]
+    Speed = [x[1] for x in res]
     z = z/(sum(Speed)/len(Speed))
     bspl = splrep(Prime_n, Speed, s=10)
     bspl_y = splev(Prime_n, bspl)
-    plot.plot(Prime_n, bspl_y, '-', label=name2, linewidth=2)
-
-
-
-    # res = bench_average(is_primitive_root3, n)
-
-    # Prime_n = [x[0] for x in res]
-    # Speed = [x[1] for x in res]
-    # # z = z/(sum(Speed)/len(Speed))
-    # bspl = splrep(Prime_n, Speed, s=10)
-    # bspl_y = splev(Prime_n, bspl)
-    # plot.plot(Prime_n, bspl_y, 'r-', label='C (from internet)', linewidth=2)
+    plot.plot(Prime_n, bspl_y, 'r-', label='C (loop based)', linewidth=2)
 
 
 
@@ -189,4 +189,5 @@ def plot_func(func,func2, name1, name2, func_name, n=7_00):
 
 # plot_func(is_primitive_root, is_primitive_root2, 'Native', 'Built-in', 'Native Python vs Built-in', n=700)
 # plot_func(is_primitive_root, is_primitive_root2, 'Built-in', 'Optimized', 'Built-in vs Optimized', n=1000)
-plot_func(is_primitive_root, MyPrime.get_all_primitive_roots_mosaed, 'Python Optimized', 'C (our\'s)', 'Python Optimized vs C', n=2000)
+# plot_func(is_primitive_root, MyPrime.get_all_primitive_roots_mosaed, 'Python Optimized', 'C (our\'s)', 'Python Optimized vs C', n=2000)
+plot_func(MyPrime.get_all_primitive_roots_mosaed, MyPrime.get_all_primitive_roots_inter, 'C (our\'s)', 'C (internet)', 'C functions', n=5_000)
