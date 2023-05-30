@@ -1,5 +1,5 @@
 CC= gcc
-CFLAGS= 
+CFLAGS= -O2
 
 p: 
 	@${CC} $(CFLAGS) -Wall -o p encryptmodule.c -I\include

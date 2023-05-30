@@ -18,7 +18,7 @@ y = 999997279 # Bob private key
 Bob = ElGamalEncryptor(p_glob, y, g_glob, e_glob)
 
 ####### Bob want to send message to me #######
-msg = 'Hi Alice!'
+msg = 'Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!Hi Alice!'
 c1, c2 = Bob.encrypt(msg)
 print("Plain message:", msg)
 print("Encrypted message:",c1, c2)

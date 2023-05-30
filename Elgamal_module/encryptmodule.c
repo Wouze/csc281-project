@@ -30,6 +30,43 @@ long long cpow_mod(long long x, long long y, long long z)
     return number;
 }
 
+// Mosaed function after optimization
+long long cpow_mod3(long long g, long long exp, long long n)
+{
+    
+    if (exp == 0)
+        return 1;
+    if (exp == 1)
+        return g % n;
+    if (exp == 2)
+        return (g * g) % n;
+
+    long long g_half_exp = cpow_mod3(g, exp>>1, n); // optimization
+
+    return (cpow_mod3(g, exp%2, n) * (g_half_exp*g_half_exp) % n) % n;
+}
+
+// Mosaed function after optimization
+long long cpow_mod4(long long g, long long exp, long long n)
+{
+    
+    if (exp == 0)
+        return 1;
+    if (exp == 1)
+        return g % n;
+    if (exp == 2){
+        long long rhs = n-g;
+        if (rhs < g)
+            g = rhs;
+
+        return (g * g) % n;
+
+    }
+
+    long long g_half_exp = cpow_mod4(g, exp>>1, n); // optimization
+
+    return (cpow_mod4(g, exp%2, n) * (g_half_exp*g_half_exp) % n) % n;
+}
 
 int cis_primitive_root(int g, int n)
 {
@@ -37,7 +74,7 @@ int cis_primitive_root(int g, int n)
 
     for (i = 1; i < n - 1; i++)
     {
-        if (cpow_mod(g, i, n) == 1)
+        if (cpow_mod4(g, i, n) == 1)
             return 0;
     }
 
@@ -204,20 +241,24 @@ int main(){
     clock_t t;
     t = clock();
     
-    unsigned long long p = 101081;
+    unsigned long long p = 15013;
     
-    // int count =0;
-    // for (int i =1; i < 9999999; i++)
-    // {
-    //     count = cpow_mod(9992, i, p);
-    // }
+    int count =0;
+    for (int i =1; i < p; i++)
+    {
+        if (cis_primitive_root(i, p)){
+            count++;
+            // printf("%d Is primitive root to %d\n", i, p);   
+        }
+    }
     // int g___ = generator(p); printf("g him: %d\n", g___);
-    int g_GLOBAL_ = cget_first_primitive_root_loop(p); printf("g  my: %d\n", g_GLOBAL_);  // generate g //
+    // int g_GLOBAL_ = cget_first_primitive_root_loop(p); printf("g  my: %d\n", g_GLOBAL_);  // generate g //
 
     t = clock() - t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
  
     printf("took %f seconds to execute \n", time_taken);
+    printf("number of primitive roots: %d\n", count);
 
     return 0;
 
