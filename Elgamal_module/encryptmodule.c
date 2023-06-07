@@ -5,16 +5,19 @@
 #include "string.h"
 #include "Python.h"
 
-
-unsigned int cis_prime(unsigned int n)
+int cis_prime(long long n)
 {
-  unsigned int last = (unsigned int) sqrt(n) + 1; 
+    
+    long long last = (long long) sqrtl(n) + 1; 
 
-  for (unsigned int j = 2; j <= last; ++j)
+    for (long long j = 2; j <= last; ++j)
     if (n % j == 0)
-      return 0;
+    
 
-  return 1;
+        return 0;
+        
+
+    return 1;
 }
 
 long long cpow_mod(long long x, long long y, long long z)
@@ -62,7 +65,7 @@ long long cpow_mod4(long long g, long long exp, long long n)
         return (g * g) % n;
 
     }
-
+    
     long long g_half_exp = cpow_mod4(g, exp>>1, n); // optimization
 
     return (cpow_mod4(g, exp%2, n) * (g_half_exp*g_half_exp) % n) % n;
@@ -113,7 +116,6 @@ long long cget_first_primitive_root_loop(long long p){
 
     long long o = 1;
     long long k;
-    long long count =0;
     for (long long r = 2; r < p; r++) {
         k = cpow_mod(r, o, p);
 
@@ -123,31 +125,20 @@ long long cget_first_primitive_root_loop(long long p){
             k %= p;
         }
         if (o == (p - 1)) {
-            count++;
+            return r;
         }
         o = 1;
     }
-    return count;
+    return -1;
 } 
 
-int generator (unsigned long long p) {
-    unsigned long long count = 0;
+long long generator (long long p) {
 
-    // {
-    // unsigned long long phi = p-1,  n = phi;
-    // for (unsigned long long i=2; i*i<=n; ++i)
-    //     if (n % i == 0) {
-    //         printf("COUNT: %d\n", count);
-    //         count++;
-    //         while (n % i == 0)
-    //             n /= i;
-    //     }
-    // }
     
     long* fact = (long*) malloc(p*sizeof(long)); 
-    int index = 0;
-    unsigned long long phi = p-1,  n = phi;
-    for (unsigned long long i=2; i*i<=n; ++i)
+    long long index = 0;
+    long long phi = p-1,  n = phi;
+    for (long long i=2; i*i<=n; ++i)
         if (n % i == 0) {
             fact[index++] = i;
             while (n % i == 0)
@@ -156,16 +147,14 @@ int generator (unsigned long long p) {
     if (n > 1)
         fact[index++] = n;
 
-    for (unsigned long long res=2; res<p; ++res) {
+    for (long long res=2; res<p; ++res) {
         int ok = 1;
         for (size_t i=0; i<index && ok; ++i)
             ok &= cpow_mod (res, phi / fact[i], p) != 1;
-        if (ok){
-            count++;
-        }
+        if (ok) return res;
             
     }
-    return count;
+    return -1;
 }
 
 
@@ -188,8 +177,15 @@ void gen_g(int*g, int p){
 void gen_g_FAST(int *g, int p){
     *g = cget_first_primitive_root_loop(p);
 }
+void gen_g_FASTEST(long long *g, long long p){
+    *g = generator(p);
+}
 
 void gen_e(int*e, int g, int x_secret, int p){
+    *e = cpow_mod(g, x_secret, p);
+}
+
+void gen_e_L(long long*e, long long g, long long x_secret, long long p){
     *e = cpow_mod(g, x_secret, p);
 }
 
@@ -201,6 +197,11 @@ void gen_keys(int* g, int x_secret, int* e, int p){
 void gen_keys_FAST(int* g, int x_secret, int* e, int p){
     gen_g_FAST(g, p);
     gen_e(e, *g, x_secret, p);
+}
+
+void gen_keys_FASTEST(long long* g, long long x_secret, long long* e, long long p){
+    gen_g_FASTEST(g, p);
+    gen_e_L(e, *g, x_secret, p);
 }
 
 
@@ -241,18 +242,18 @@ int main(){
     clock_t t;
     t = clock();
     
-    unsigned long long p = 15013;
+    long long p = 4000000007;
     
     int count =0;
-    for (int i =1; i < p; i++)
-    {
-        if (cis_primitive_root(i, p)){
-            count++;
-            // printf("%d Is primitive root to %d\n", i, p);   
-        }
-    }
+    // for (int i =1; i < p; i++)
+    // {
+    //     if (cis_primitive_root(i, p)){
+    //         count++;
+    //         // printf("%d Is primitive root to %d\n", i, p);   
+    //     }
+    // }
     // int g___ = generator(p); printf("g him: %d\n", g___);
-    // int g_GLOBAL_ = cget_first_primitive_root_loop(p); printf("g  my: %d\n", g_GLOBAL_);  // generate g //
+    int g_GLOBAL_ = cget_first_primitive_root_loop(p); printf("g  my: %d\n", g_GLOBAL_);  // generate g //
 
     t = clock() - t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
@@ -343,15 +344,16 @@ int main(){
             Py module stuff
 ###########################################################
 */
-#if 0
+#if 1
 
 static PyObject* is_prime(PyObject* self, PyObject* args){
-    unsigned int number, sts;
-    
-    if (!PyArg_ParseTuple(args, "i", &number))
+    long long number;
+    int sts;
+    if (!PyArg_ParseTuple(args, "L", &number))
         return NULL;
     
     sts = cis_prime(number);
+
     return PyBool_FromLong(sts);
 }
 
@@ -362,6 +364,7 @@ static PyObject* gen_keys_p(PyObject* self, PyObject* args){
         return NULL;
     
     gen_keys(&g_, secret, &e_, p);
+    
     PyObject* sts = PyTuple_Pack(2, PyLong_FromLong(g_),  PyLong_FromLong(e_));
 
     return sts;
@@ -375,6 +378,18 @@ static PyObject* gen_keys_FAST_p(PyObject* self, PyObject* args){
     
     gen_keys_FAST(&g_, secret, &e_, p);
     PyObject* sts = PyTuple_Pack(2, PyLong_FromLong(g_),  PyLong_FromLong(e_));
+
+    return sts;
+}
+
+static PyObject* gen_keys_FASTEST_p(PyObject* self, PyObject* args){
+    long long p, secret, g_, e_;
+    
+    if (!PyArg_ParseTuple(args, "LL", &p, &secret))
+        return NULL;
+    
+    gen_keys_FASTEST(&g_, secret, &e_, p);
+    PyObject* sts = PyTuple_Pack(2, PyLong_FromLongLong(g_),  PyLong_FromLongLong(e_));
 
     return sts;
 }
@@ -451,6 +466,7 @@ static PyMethodDef ElGamal_cs[] = {
     {"is_prime", is_prime, METH_VARARGS, "Calculates if the number is prime or not."},
     {"gen_keys", gen_keys_p, METH_VARARGS, "generates keys"},
     {"gen_keys_FAST", gen_keys_FAST_p, METH_VARARGS, "generates keys, but Fast"},
+    {"gen_keys_FASTEST", gen_keys_FASTEST_p, METH_VARARGS, "generates keys, but so much Fast"},
     {"gen_c1", gen_c1_p, METH_VARARGS, "generate cypher text 1"},
     {"gen_x_key", gen_x_key_py, METH_VARARGS, "generate x_key for decryption"},
     {"encrypt", encrypt_p, METH_VARARGS, "encrypt message"},

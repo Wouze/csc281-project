@@ -13,6 +13,10 @@ gen_keys_FAST:
     Generate the global g, e keys from the secret key and p
     Faster
 
+gen_keys_FASTEST:
+    Generate the global g, e keys from the secret key and p
+    FASTEST
+
 gen_c1:
     generate cypher msg 1
 
@@ -145,6 +149,14 @@ def gen_keys_FAST(p:int, secret:int):
     Uses faster algorithm to find primitive roots
     """
     g, e = ElGamal_c.gen_keys_FAST(p, secret)
+    return g, e
+
+def gen_keys_FASTEST(p:int, secret:int):
+    """
+    Generate the global g, e keys from the secret key and p
+    Uses THE FASTEST algorithm to find primitive roots
+    """
+    g, e = ElGamal_c.gen_keys_FASTEST(p, secret)
     return g, e
 
 def gen_c1(g, secret, p) -> int:

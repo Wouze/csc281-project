@@ -7,4 +7,4 @@ p:
 
 s:
 	@${CC} $(CFLAGS) -o p encryptmodule_tests.c -I\include
-	s
+	s	

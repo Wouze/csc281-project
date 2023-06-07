@@ -8,6 +8,7 @@
 
 int cis_prime(int n)
 {
+    
   int last = (int) sqrt(n) + 1; 
 
   for (int j = 2; j <= last; ++j)
