@@ -1,5 +1,5 @@
+from project import is_prime, get_all_primitive_roots # Our functions module
 from tkinter import *
-from project import *
 from tkinter.scrolledtext import ScrolledText
 
 window = Tk()
