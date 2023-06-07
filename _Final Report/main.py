@@ -1,4 +1,3 @@
-from pygamal import *
 from tkinter import *
 from project import *
 from tkinter.scrolledtext import ScrolledText
