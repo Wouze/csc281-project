@@ -3,7 +3,7 @@ This is our project at csc281 course
 
 project supervisor: Aqil Alazimi
 
-# Testing pygamal module
+## ⚙️ Installation ⚙️
 
 to test pygamal module, you first type this in cmd
 ```bash
@@ -59,3 +59,23 @@ There exsist a website that has another algorithm of doing so, [Link for the pag
 But still, generating keys for the prime 1_000_000_007 takes around 10 seconds!
 That made me search for better algorithm, and I found one!, [link for the paper](https://cp-algorithms.com/algebra/primitive-root.html#implementation).
 This last one is implemented under gen_keys_FASTEST(), and the same prime takes literally 0.000 seconds!
+
+# Demo
+![image](https://github.com/user-attachments/assets/2c300009-6898-4636-a6f1-8f5e32591e9e)
+
+![image](https://github.com/user-attachments/assets/0dbd47a7-9848-42dd-a32d-c6bca8aedc85)
+
+![image](https://github.com/user-attachments/assets/7b2ad39e-cf07-43e8-9bde-07f2b91a4213)
+
+## 🔧 Technologies Used 🔧
+
+- **Python Programming Language** 💻
+- **C Programming Language** 💻
+- **Jave Programming Language** 💻
+- **Rust Programming Language** 💻
+
+
+# Algorithm
+
+![image](https://github.com/user-attachments/assets/e068e6b7-4b68-43a9-b031-12b3b36eeea0)
+
